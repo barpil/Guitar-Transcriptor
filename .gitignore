@@ -1,0 +1,6 @@
+data/dataframes/*
+data/Guitar Dataset/*
+data/model_history/*
+data/prepared_data/*
+model/*
+.venv
