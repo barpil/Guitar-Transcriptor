@@ -1,6 +1,13 @@
 from pathlib import Path
+
+import numpy as np
 import pandas as pd
 import librosa
+from sklearn.preprocessing import StandardScaler
+from sympy import false
+
+import config
+
 
 def load_dataset(data_path, sr=None):
     data = []
@@ -63,3 +70,76 @@ def process_dataset(df, n_fft=2048, hop_lenght=512):
         contrast_t.append(contrast)
         labels.append(label)
     return mel_t, chroma_t, contrast_t, labels
+
+
+import pandas as pd
+import numpy as np
+from sklearn.preprocessing import StandardScaler
+
+def get_feature_combination_dataframe(
+    features_list: list,
+    label_list: list,
+    n_fft: int,
+    hop_lenght: int,
+    sr: int,
+    data_path: str,
+    save_dataframe: bool = False,
+    filename: str = "features_dataframe"
+):
+    df = load_dataset(data_path, sr)
+    scaler = StandardScaler()
+    mel, chroma, contrast, labels = process_dataset(df, n_fft, hop_lenght)
+
+    features_dict = {
+        "mel": pd.DataFrame([row.flatten() for row in mel]),
+        "chroma": pd.DataFrame([row.flatten() for row in chroma]),
+        "contrast": pd.DataFrame([row.flatten() for row in contrast])
+    }
+
+    if not all(feature in features_dict for feature in features_list):
+        raise ValueError(f"Feature in feature_list was not recognized.\nAvailable features:\n{features_dict.keys()}")
+
+    # Rozdzielenie etykiet na podstawowe i złożone
+    split_labels = map(lambda x: x.split("_", 1), labels)
+    sound_labels, combined_3_labels = zip(*split_labels)
+    sound_labels = list(sound_labels)
+    combined_3_labels = list(combined_3_labels)
+
+    string_labels, pluck_labels, sound_type_labels = zip(
+        *map(lambda label: (label[0], label[1], label[2]), combined_3_labels)
+    )
+    string_labels = list(string_labels)
+    pluck_labels = list(pluck_labels)
+    sound_type_labels = list(sound_type_labels)
+
+    labels_dict = {
+        "sound": sound_labels,
+        "string": string_labels,
+        "pluck": pluck_labels,
+        "sound_type": sound_type_labels
+    }
+
+    if not all(label in labels_dict for label in label_list):
+        raise ValueError(f"Label in label_list was not recognized.\nAvailable labels:\n{labels_dict.keys()}")
+
+    # Inicjalizacja etykiet
+    if "sound" in label_list:
+        result_labels = labels_dict["sound"]
+    else:
+        result_labels = [""] * len(labels)  # Pusta etykieta o poprawnej długości
+
+    # Sklejanie pozostałych etykiet
+    for label_key in ["string", "pluck", "sound_type"]:
+        if label_key in label_list:
+            result_labels = [x + "-" + y if x else y for x, y in zip(result_labels, labels_dict[label_key])]
+    # Tworzenie końcowego DataFrame z wybranych cech
+    result_dataframe = pd.concat(
+        [features_dict[feature] for feature in features_list],
+        axis=1
+    )
+    result_dataframe["label"] = result_labels
+
+    if save_dataframe:
+        result_dataframe.to_csv(f"{config.DATAFRAMES_DIR_PATH}/{filename}.csv", index=False)
+    else:
+        return result_dataframe

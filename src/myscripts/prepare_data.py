@@ -1,8 +1,13 @@
 import numpy as np
 import os
+
+import pandas as pd
+
 import config
 from sklearn.model_selection import train_test_split
 from sklearn.preprocessing import OneHotEncoder, LabelEncoder
+
+from src.myscripts import func
 
 
 def _encode_labels(df, label_col_index, encoder_class):
@@ -54,3 +59,5 @@ def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions
               f"\n\nNumber of classes: {len(np.unique(y_train))}")
     else:
         return x_train, y_train, x_val, y_val, x_test, y_test
+
+
