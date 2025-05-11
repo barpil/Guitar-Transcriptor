@@ -1,3 +1,5 @@
+from argparse import ArgumentError
+
 import numpy as np
 import os
 
@@ -34,9 +36,12 @@ def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions
     Y = data_encoded.iloc[:, -1].values
 
     # Podzial zbioru na dane do uczenia, zbior validacyjny oraz zbior do pozniejszego testowania danych.
-    x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=1-split_proportions[0], random_state=random_state, shuffle=True, stratify=Y)
-    x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=split_proportions[2]/(split_proportions[1]+split_proportions[2]), random_state=random_state, shuffle=True,
-                                                    stratify=y_test)
+    try:
+        x_train, x_test, y_train, y_test = train_test_split(X, Y, test_size=1-split_proportions[0], random_state=random_state, shuffle=True, stratify=Y)
+        x_val, x_test, y_val, y_test = train_test_split(x_test, y_test, test_size=split_proportions[2]/(split_proportions[1]+split_proportions[2]), random_state=random_state, shuffle=True,
+                                                        stratify=y_test)
+    except:
+        raise ArgumentError("Insufficient population of class. At least 2 representatives needed to split data.")
 
     # Rozszerzenie wymiarów danych, ponieważ dla CNN potrzeba 3 wymiarow (wysokosc, szerokosc i ilosc kanalow obrazu)
     x_train = np.expand_dims(x_train, axis=-1)
