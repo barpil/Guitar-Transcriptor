@@ -1,10 +1,14 @@
-numpy==1.26.4
-pandas==2.2.1
-matplotlib==3.8.3
+numpy
+pandas
+matplotlib
 librosa==0.10.1
 seaborn==0.13.2
-pytorch-cuda==12.1
 joblib
 
 fastapi
 uvicorn
+
+--index-url https://download.pytorch.org/whl/cu128
+torch
+torchvision
+torchaudio

@@ -1,5 +1,6 @@
 from typing import BinaryIO
 
+import joblib
 import librosa
 import pandas as pd
 import torch
@@ -39,9 +40,12 @@ class PredictionModel():
         string_tensor = torch.tensor(mel_spectrogram, dtype= torch.float32)
         sound_type_tensor = torch.tensor(pd.concat([chroma, contrast], axis=1), dtype= torch.float32)
 
+        sound_encoder = joblib.load(f"{config.MODEL_DIR_PATH}/sound_encoder.joblib")
+        string_encoder = joblib.load(f"{config.MODEL_DIR_PATH}/string_encoder.joblib")
+        sound_type_encoder = joblib.load(f"{config.MODEL_DIR_PATH}/sound_type_encoder.joblib")
         with torch.no_grad():
-            pred_sound = torch.argmax(self.sound_model(sound_tensor), dim=1)
-            pred_string = torch.argmax(self.string_model(string_tensor), dim=1)
-            pred_sound_type = torch.argmax(self.sound_type_model(sound_type_tensor), dim=1)
+            pred_sound = sound_encoder.inverse_transform(torch.argmax(self.sound_model(sound_tensor), dim=1).cpu().numpy())
+            pred_string = string_encoder.inverse_transform(torch.argmax(self.string_model(string_tensor), dim=1).cpu().numpy())
+            pred_sound_type = sound_type_encoder.inverse_transform(torch.argmax(self.sound_type_model(sound_type_tensor), dim=1).cpu().numpy())
 
-        return {"sound": }
+        return {"sound": pred_sound, "string": pred_string, "sound_type": pred_sound_type}

@@ -26,7 +26,7 @@ def _encode_labels(df, label_col_index, encoder_class, encoder_file_name):
         raise AttributeError("Unknown encoder parsed!:", encoder_class)
     dataframe = df
     dataframe.iloc[:, label_col_index] = Y
-    #joblib.dump(encoder, f"{config.MODEL_DIR_PATH}/{encoder_file_name}")
+    joblib.dump(encoder, f"{config.MODEL_DIR_PATH}/{encoder_file_name}")
     return dataframe
 
 def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions, random_state=0, save_to_npy=True, encoder_file_name="saved_encoder.joblib"):
