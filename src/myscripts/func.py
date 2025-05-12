@@ -84,7 +84,7 @@ def get_feature_combination_dataframe(
     sr: int,
     data_path: str,
     save_dataframe: bool = False,
-    filename: str = "features_dataframe"
+    filename: str = "features_dataframe",
 ):
     df = load_dataset(data_path, sr)
     scaler = StandardScaler()

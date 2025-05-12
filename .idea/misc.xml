@@ -3,5 +3,5 @@
   <component name="Black">
     <option name="sdkName" value="Python 3.13 (Rozpoznawanie_dzwiekow_gitarowych)" />
   </component>
-  <component name="ProjectRootManager" version="2" project-jdk-name="rozpoznawanie_dzwiekow_gitarowy" project-jdk-type="Python SDK" />
+  <component name="ProjectRootManager" version="2" project-jdk-name="guitar-sound-recognition" project-jdk-type="Python SDK" />
 </project>

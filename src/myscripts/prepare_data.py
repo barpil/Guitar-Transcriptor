@@ -1,5 +1,6 @@
 from argparse import ArgumentError
 
+import joblib
 import numpy as np
 import os
 
@@ -12,7 +13,7 @@ from sklearn.preprocessing import OneHotEncoder, LabelEncoder
 from src.myscripts import func
 
 
-def _encode_labels(df, label_col_index, encoder_class):
+def _encode_labels(df, label_col_index, encoder_class, encoder_file_name):
     Y = df.iloc[:, label_col_index].values
     encoder = encoder_class()
 
@@ -25,13 +26,14 @@ def _encode_labels(df, label_col_index, encoder_class):
         raise AttributeError("Unknown encoder parsed!:", encoder_class)
     dataframe = df
     dataframe.iloc[:, label_col_index] = Y
+    #joblib.dump(encoder, f"{config.MODEL_DIR_PATH}/{encoder_file_name}")
     return dataframe
 
-def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions, random_state=0, save_to_npy=True):
+def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions, random_state=0, save_to_npy=True, encoder_file_name="saved_encoder.joblib"):
     path= config.DATA_SPLIT_SAVE_DIR_PATH
     if(sum(split_proportions)!=1):
         raise AttributeError("split_proportions does not add up to 1. (correct example: split_proportions=[0.7,0.2,0.1])")
-    data_encoded = _encode_labels(df, label_col_index, encoder_class)
+    data_encoded = _encode_labels(df, label_col_index, encoder_class, encoder_file_name=encoder_file_name)
     X = data_encoded.iloc[:, :-1].values
     Y = data_encoded.iloc[:, -1].values
 
