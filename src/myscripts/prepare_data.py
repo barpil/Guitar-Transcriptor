@@ -31,8 +31,8 @@ def _encode_labels(df, label_col_index, encoder_class, encoder_file_name):
 
 def prepare_data_for_model(df, label_col_index, encoder_class, split_proportions, random_state=0, save_to_npy=True, encoder_file_name="saved_encoder.joblib"):
     path= config.DATA_SPLIT_SAVE_DIR_PATH
-    if(sum(split_proportions)!=1):
-        raise AttributeError("split_proportions does not add up to 1. (correct example: split_proportions=[0.7,0.2,0.1])")
+    if(round(sum(split_proportions),6)!=1):
+        raise AttributeError(f"split_proportions does not add up to 1. Passed split_proportions={split_proportions}={sum(split_proportions)} (correct example: split_proportions=[0.7,0.2,0.1])")
     data_encoded = _encode_labels(df, label_col_index, encoder_class, encoder_file_name=encoder_file_name)
     X = data_encoded.iloc[:, :-1].values
     Y = data_encoded.iloc[:, -1].values

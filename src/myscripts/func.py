@@ -89,12 +89,13 @@ def get_feature_combination_dataframe(
     df = load_dataset(data_path, sr)
     scaler = StandardScaler()
     mel, chroma, contrast, labels = process_dataset(df, n_fft, hop_lenght)
-
     features_dict = {
         "mel": pd.DataFrame([row.flatten() for row in mel]),
         "chroma": pd.DataFrame([row.flatten() for row in chroma]),
         "contrast": pd.DataFrame([row.flatten() for row in contrast])
     }
+
+    print(f"Po splaszczeniu mel: {features_dict.get('mel').shape}")
 
     if not all(feature in features_dict for feature in features_list):
         raise ValueError(f"Feature in feature_list was not recognized.\nAvailable features:\n{features_dict.keys()}")

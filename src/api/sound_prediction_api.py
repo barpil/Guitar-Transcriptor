@@ -10,9 +10,9 @@ app = FastAPI()
 
 model = None
 
-sound_rec_pth = f"{config.MODEL_DIR_PATH}/sound_recognition_model.pth"
-string_rec_pth = f"{config.MODEL_DIR_PATH}/string_recognition_model.pth"
-sound_type_rec_pth = f"{config.MODEL_DIR_PATH}/sound_type_recognition_model.pth"
+sound_rec_pth = f"sound_recognition_model.pth"
+string_rec_pth = f"string_recognition_model.pth"
+sound_type_rec_pth = f"sound_type_recognition_model.pth"
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     global model
@@ -35,6 +35,6 @@ async def analyze_wav(file: UploadFile = File(...)):
     with open(temp_file_path, "wb") as f:
         f.write(await file.read())
 
-    result = model.predict(file.file)
+    result = model.predict(temp_file_path)
     return result
 
